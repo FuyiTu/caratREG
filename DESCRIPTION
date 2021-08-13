@@ -1,0 +1,11 @@
+Package: caratREG
+Type: Package
+Title: Regressions and Analysis Methods for Covariate-Adaptive Randomization
+Version: 0.0.1
+Date: 2021-08-10
+Author: Fuyi Tu [aut, cre], Wei Ma [aut, ths], Hanzhong Liu [aut, ths]
+Maintainer: Fuyi Tu <fuyi.tu@ruc.edu.cn>
+Description: This package implements all of the regression methods considered in Ma et al.(2020) for estimating and inferring the treatment effect under covariate-adaptive randomization.
+License: GPL (>= 3)
+Imports: dplyr (>= 1.0.0), MASS, stats
+RoxygenNote: 7.1.1

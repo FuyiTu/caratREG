@@ -73,6 +73,12 @@ Input_check <- function(A, B, Y, X, pi, q){
 #'n <- 1000
 #'pi <- 0.5
 #'q <- pi*(1-pi)
+#'alphavec <- c(5,8,3,12)
+#'m2e<-function(x){
+#'  6*exp(x)*x*(1-x)
+#'}
+#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
+#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
@@ -89,7 +95,7 @@ Input_check <- function(A, B, Y, X, pi, q){
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
 #'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
 #'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
-#'Y <- Y0*(1-A)+Y1*A)
+#'Y <- Y0*(1-A)+Y1*A
 #'tau.diff(A, B, Y, X, pi, q)
 #'@export
 tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
@@ -168,6 +174,12 @@ tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'n <- 1000
 #'pi <- 0.5
 #'q <- pi*(1-pi)
+#'alphavec <- c(5,8,3,12)
+#'m2e<-function(x){
+#'  6*exp(x)*x*(1-x)
+#'}
+#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
+#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
@@ -184,7 +196,7 @@ tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
 #'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
 #'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
-#'Y <- Y0*(1-A)+Y1*A)
+#'Y <- Y0*(1-A)+Y1*A
 #'tau.adj(A, B, Y, X, pi, q)
 #'@export
 tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
@@ -263,6 +275,12 @@ tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'n <- 1000
 #'pi <- 0.5
 #'q <- pi*(1-pi)
+#'alphavec <- c(5,8,3,12)
+#'m2e<-function(x){
+#'  6*exp(x)*x*(1-x)
+#'}
+#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
+#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
@@ -279,7 +297,7 @@ tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
 #'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
 #'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
-#'Y <- Y0*(1-A)+Y1*A)
+#'Y <- Y0*(1-A)+Y1*A
 #'tau.diff(A, B, Y, X, pi, q)
 #'@export
 tau.interact<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){

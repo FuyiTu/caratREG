@@ -7,65 +7,72 @@
 tau.interact(A, B, Y, X = NULL, pi, q, conf.level = 0.95)
 }
 \arguments{
-\item{A}{numeric vector, containing subjects' treatment assignments. Its
-length should be the same as the number of subjects.}
+\item{A}{a numeric vector of treatment assignments. Its length should be the
+same as the number of subjects.}
 
-\item{B}{numeric vector, containing subjects' stratum labels. Its length
-should be the same as the number of subjects.}
+\item{B}{a numeric vector of stratum labels. Its length should be the same as
+the number of subjects.}
 
-\item{Y}{numeric vector, containing subjects' observed outcomes. Its length
-should be the same as the number of subjects.}
+\item{Y}{a numeric vector of observed outcomes. Its length should be the same
+as the number of subjects.}
 
-\item{X}{design matrix, containing additional covariates used in the
-regression (optional). Each column represents a covariate.}
+\item{X}{an (optional) numeric design matrix containing additional covariates
+used in the regression.}
 
-\item{pi}{numeric, the target treatment proportion in each stratum.}
+\item{pi}{a numeric value for the target treatment proportion in each stratum.}
 
-\item{q}{numeric, indicating the balance level of covariate-adaptive
-randomizations. Detailed information can be found in Ma et al.(2020),
-section 2.}
+\item{q}{a numeric value indicating the balance level of covariate-adaptive
+randomizations. Detailed information can be found in Section 2, Ma et
+al.(2020).}
 
 \item{conf.level}{confidence level of the interval. Default is 0.95.}
 }
 \value{
-It returns an object of class \code{"htest"}.
-
- The function \code{print} is used to obtain results. The generic accessor
- functions \code{statistic}, \code{p.value}, \code{conf.int} and others
- extract various useful features of the value returned by \code{inter.test}.
-
- An object of class \code{"htest"} is a list containing at least the
- following components: \describe{ \item{statistic}{the value of the
- t-statistic.} \item{p.value}{the p-value of the test,the null hypothesis is
- rejected if p-value is less than the significance level.} \item{conf.int}{a
- confidence interval under chosen level \code{conf} for the difference in
- treatment effect between treatment group and control group.}
+A list of class \code{"htest"} containing the following components: 
+ \item{statistic}{the value of the t-statistic.}
+ \item{p.value}{the p-value for the test}
+ \item{conf.int}{a confidence interval under chosen level \code{conf.level} for the difference
+ in treatment effect between treatment group and control group.}
  \item{estimate}{estimated treatment effect difference between treatment
- group and control group.} \item{method}{a character string indicating what
- type of test was performed.} }
+ group and control group.}
+ \item{method}{a character string indicating what type of regression was performed.}
 }
 \description{
 Estimating and inferring the treatment effect based on regression with
 interaction.
 }
 \details{
-Estimating and inferring the treatment effect based on regression with
-interaction and (optional) additional covatiates. It follows the idea of Ma et
-al. (2020) <arXiv:2009.02287>, Section 3.3 and Section 4.3.
+Estimating and inferring the treatment effect based on regression with interaction. It
+implements the methods as described in Sections 3.3 and 4.3, Ma et al. (2020).
 }
 \examples{
 n <- 1000
 pi <- 0.5
 q <- pi*(1-pi)
-X1 <- rbeta(n, 2, 2)
-X2 <- runif(n, -5, 3)
-B <- sample(1:4, n, replace = TRUE)
-A <- sample(c(0, 1), n, replace = TRUE, prob = c(1-pi, pi))
-Y0 <- 3*log(X1+3)*X2 + rnorm(n,sd = 1)
-Y1 <- 1 + 2*X1 + rnorm(n,sd = 2)
-Y <- Y0*(1-A) + Y1*A
-X <- cbind(X1, X2)
-tau.interact(A, B, Y, X, pi, q)
+alphavec <- c(5,8,3,12)
+m2e<-function(x){
+ 6*exp(x)*x*(1-x)
+}
+mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
+mu1 <- 0
+X1 <- rgamma(n,2)
+X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
+X3 <- rpois(n,3)
+X4 <- rbeta(n,2,2)
+X1_S <- rep(1,n)
+X1_S[which(X1 >= 2.5)] <- 2
+profile <- cbind(X1_S, X2)
+strata <- unique(cbind(X1_S,X2))
+B <- numeric(n)
+for(i in 1:nrow(strata)){
+ B[which(profile[,1] == strata[i,1] & profile[,2] == strata[i,2])] = i
+}
+X <- cbind(X1,X3)
+A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
+Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
+Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
+Y <- Y0*(1-A)+Y1*A
+tau.diff(A, B, Y, X, pi, q)
 }
 \references{
 Ma, W., Tu, F., & Liu, H. (2020). \emph{Regression analysis for

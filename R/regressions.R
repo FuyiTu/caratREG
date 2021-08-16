@@ -5,7 +5,7 @@ center_colmeans <- function(x){
 }
 
 # Input check
-Input_check <- function(A, B, Y, X, pi, q){
+Input_check <- function(Y, A, B, X, pi, q){
   if(!is.numeric(A)||!is.vector(A)){
     stop("Please enter a numeric vector for treatment assignments (A)!")
   }
@@ -59,7 +59,7 @@ Input_check <- function(A, B, Y, X, pi, q){
 #'
 #'@return A list of class \code{"htest"} containing the following components:
 #'\item{statistic}{the value of the t-statistic.} \item{p.value}{the p-value for
-#'the test} \item{conf.int}{a confidence interval under chosen level
+#'the test.} \item{conf.int}{a confidence interval under chosen level
 #'\code{conf.level} for the difference in treatment effect between treatment
 #'group and control group.} \item{estimate}{estimated treatment effect
 #'difference between treatment group and control group.} \item{method}{a
@@ -70,6 +70,7 @@ Input_check <- function(A, B, Y, X, pi, q){
 #'  perspective}. arXiv preprint arXiv:2009.02287.
 #'
 #'@examples
+#'#The code replicates the simulation setting of Model 2 in Section 6, Ma et al. (2020).
 #'n <- 1000
 #'pi <- 0.5
 #'q <- pi*(1-pi)
@@ -77,29 +78,23 @@ Input_check <- function(A, B, Y, X, pi, q){
 #'m2e<-function(x){
 #'  6*exp(x)*x*(1-x)
 #'}
-#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
-#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
 #'X4 <- rbeta(n,2,2)
 #'X1_S <- rep(1,n)
 #'X1_S[which(X1 >= 2.5)] <- 2
-#'profile <- cbind(X1_S, X2)
-#'strata <- unique(cbind(X1_S,X2))
-#'B <- numeric(n)
-#'for(i in 1:nrow(strata)){
-#'  B[which(profile[,1] == strata[i,1] & profile[,2] == strata[i,2])] = i
-#'}
+#'B <- as.numeric(interaction(X1_S,X2))
 #'X <- cbind(X1,X3)
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
-#'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
-#'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
+#'Y0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value+
+#'      alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
+#'Y1 <- alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
 #'Y <- Y0*(1-A)+Y1*A
-#'tau.diff(A, B, Y, X, pi, q)
+#'tau.diff(Y, A, B, X, pi, q)
 #'@export
-tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
-  Input_check(A, B, Y, X, pi, q)
+tau.diff<-function(Y, A, B, X = NULL, pi, q, conf.level = 0.95){
+  Input_check(Y, A, B, X, pi, q)
   strt <- unique(B)
   strt_num <- length(strt)
   if(is.null(X)){
@@ -139,8 +134,9 @@ tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'Estimating and inferring the treatment effect based on regression without
 #'interaction.
 #'
-#'Estimating and inferring the treatment effect based on regression without interaction. It
-#'implements the methods as described in Sections 3.2 and 4.2, Ma et al. (2020).
+#'Estimating and inferring the treatment effect based on regression without
+#'interaction. It implements the methods as described in Sections 3.2 and 4.2,
+#'Ma et al. (2020).
 #'
 #'@param Y a numeric vector of observed outcomes. Its length should be the same
 #'  as the number of subjects.
@@ -156,21 +152,20 @@ tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'  al.(2020).
 #'@param conf.level confidence level of the interval. Default is 0.95.
 #'
-#'@return 
-#'  A list of class \code{"htest"} containing the following components: 
-#'  \item{statistic}{the value of the t-statistic.}
-#'  \item{p.value}{the p-value for the test}
-#'  \item{conf.int}{a confidence interval under chosen level \code{conf.level} for the difference
-#'  in treatment effect between treatment group and control group.}
-#'  \item{estimate}{estimated treatment effect difference between treatment
-#'  group and control group.}
-#'  \item{method}{a character string indicating what type of regression was performed.} 
+#'@return A list of class \code{"htest"} containing the following components:
+#'\item{statistic}{the value of the t-statistic.} \item{p.value}{the p-value for
+#'the test.} \item{conf.int}{a confidence interval under chosen level
+#'\code{conf.level} for the difference in treatment effect between treatment
+#'group and control group.} \item{estimate}{estimated treatment effect
+#'difference between treatment group and control group.} \item{method}{a
+#'character string indicating what type of regression was performed.}
 #'
 #'@references Ma, W., Tu, F., & Liu, H. (2020). \emph{Regression analysis for
 #'  covariate-adaptive randomization: A robust and efficient inference
 #'  perspective}. arXiv preprint arXiv:2009.02287.
 #'
 #'@examples
+#'#The code replicates the simulation setting of Model 2 in Section 6, Ma et al. (2020).
 #'n <- 1000
 #'pi <- 0.5
 #'q <- pi*(1-pi)
@@ -178,29 +173,23 @@ tau.diff<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'m2e<-function(x){
 #'  6*exp(x)*x*(1-x)
 #'}
-#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
-#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
 #'X4 <- rbeta(n,2,2)
 #'X1_S <- rep(1,n)
 #'X1_S[which(X1 >= 2.5)] <- 2
-#'profile <- cbind(X1_S, X2)
-#'strata <- unique(cbind(X1_S,X2))
-#'B <- numeric(n)
-#'for(i in 1:nrow(strata)){
-#'  B[which(profile[,1] == strata[i,1] & profile[,2] == strata[i,2])] = i
-#'}
+#'B <- as.numeric(interaction(X1_S,X2))
 #'X <- cbind(X1,X3)
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
-#'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
-#'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
+#'Y0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value +
+#'      alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
+#'Y1 <- alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
 #'Y <- Y0*(1-A)+Y1*A
-#'tau.adj(A, B, Y, X, pi, q)
+#'tau.adj(Y, A, B, X, pi, q)
 #'@export
-tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
-  Input_check(A, B, Y, X, pi, q)
+tau.adj<-function(Y, A, B, X = NULL, pi, q, conf.level = 0.95){
+  Input_check(Y, A, B, X, pi, q)
   strt <- unique(B)
   strt_num <- length(strt)
   if(is.null(X)){
@@ -252,15 +241,12 @@ tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'@param X an (optional) numeric design matrix containing additional covariates
 #'  used in the regression.
 #'@param pi a numeric value for the target treatment proportion in each stratum.
-#'@param q a numeric value indicating the balance level of covariate-adaptive
-#'  randomizations. Detailed information can be found in Section 2, Ma et
-#'  al.(2020).
 #'@param conf.level confidence level of the interval. Default is 0.95.
 #'
 #'@return 
 #'  A list of class \code{"htest"} containing the following components: 
 #'  \item{statistic}{the value of the t-statistic.}
-#'  \item{p.value}{the p-value for the test}
+#'  \item{p.value}{the p-value for the test.}
 #'  \item{conf.int}{a confidence interval under chosen level \code{conf.level} for the difference
 #'  in treatment effect between treatment group and control group.}
 #'  \item{estimate}{estimated treatment effect difference between treatment
@@ -272,36 +258,30 @@ tau.adj<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
 #'  perspective}. arXiv preprint arXiv:2009.02287.
 #'
 #'@examples
+#'#The code replicates the simulation setting of Model 2 in Section 6, Ma et al. (2020).
 #'n <- 1000
 #'pi <- 0.5
-#'q <- pi*(1-pi)
 #'alphavec <- c(5,8,3,12)
 #'m2e<-function(x){
 #'  6*exp(x)*x*(1-x)
 #'}
-#'mu0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value
-#'mu1 <- 0
 #'X1 <- rgamma(n,2)
 #'X2 <- sample(c(1,2,3),n,replace = TRUE, prob = c(0.3,0.6,0.1))
 #'X3 <- rpois(n,3)
 #'X4 <- rbeta(n,2,2)
 #'X1_S <- rep(1,n)
 #'X1_S[which(X1 >= 2.5)] <- 2
-#'profile <- cbind(X1_S, X2)
-#'strata <- unique(cbind(X1_S,X2))
-#'B <- numeric(n)
-#'for(i in 1:nrow(strata)){
-#'  B[which(profile[,1] == strata[i,1] & profile[,2] == strata[i,2])] = i
-#'}
+#'B <- as.numeric(interaction(X1_S,X2))
 #'X <- cbind(X1,X3)
 #'A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
-#'Y0 <- mu0+alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
-#'Y1 <- mu1+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
+#'Y0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value+
+#'      alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
+#'Y1 <- alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
 #'Y <- Y0*(1-A)+Y1*A
-#'tau.diff(A, B, Y, X, pi, q)
+#'tau.interact(Y, A, B, X, pi)
 #'@export
-tau.interact<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
-  Input_check(A, B, Y, X, pi, q)
+tau.interact<-function(Y, A, B, X = NULL, pi, conf.level = 0.95){
+  Input_check(Y, A, B, X, pi, 0)
   strt <- unique(B)
   strt_num <- length(strt)
   if(is.null(X)){
@@ -310,8 +290,7 @@ tau.interact<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
     dummy_cent <- center_colmeans(dummy)
     l <- stats::lm(Y~A+dummy+A:dummy_cent)
     estimate <- l$coefficients[2]
-    sq <- rep(q, strt_num)
-    stderr <- SE_var(A, B, Y, sq, strt, strt_num, pi)
+    stderr <- SE_var(A, B, Y, strt, strt_num, pi)
   }
   else{
     p <- ncol(X)
@@ -328,8 +307,7 @@ tau.interact<-function(A, B, Y, X = NULL, pi, q, conf.level = 0.95){
     }
     l <- eval(parse(text = paste("stats::lm(", formtext, ")",sep = "")))
     estimate <- l$coefficients[2]
-    sq <- rep(q, strt_num)
-    stderr <- IR_var(A, B, Y, X, sq, strt, strt_num, pi)
+    stderr <- IR_var(A, B, Y, X, strt, strt_num, pi)
   }
   testmethod<-"Regression with interaction"
   tstat <- estimate/stderr

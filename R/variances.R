@@ -1,5 +1,5 @@
 #Parametric Estimators
-samplevar<-function(A,S,R,sq,strt,strt_num){
+samplevar<-function(A,S,R,strt,strt_num){
   r0 = rep(0,strt_num)
   r1 = rep(0,strt_num)
   nk0 = rep(0,strt_num)
@@ -54,7 +54,7 @@ samplevarpr<-function(pn,sq,r0,r1,pi){
 
 DME_var<-function(A,S,Y,sq,strt,strt_num,pi){
   n = length(A)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])+
     samplevarAr(sv[,1],sq,sv[,4],sv[,5],pi)
@@ -63,16 +63,16 @@ DME_var<-function(A,S,Y,sq,strt,strt_num,pi){
 
 FEE_var<-function(A,S,Y,sq,strt,strt_num,pi){
   n = length(A)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])+
     samplevarpr(sv[,1],sq,sv[,4],sv[,5],pi)
   return(sqrt(s/n))
 }
 
-SE_var<-function(A,S,Y,sq,strt,strt_num,pi){
+SE_var<-function(A,S,Y,strt,strt_num,pi){
   n = length(A)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])
   return(sqrt(s/n))
@@ -160,7 +160,7 @@ SR_var<-function(A,S,Y,X,sq,strt,strt_num,pi){
   n = nrow(X)
   reg = regc(A,Y,X)
   Y = Y - X%*%(pi*reg$beta1 + (1-pi)*reg$beta0)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])+
     samplevarAr(sv[,1],sq,sv[,4],sv[,5],pi)
@@ -171,18 +171,18 @@ AN_var<-function(A,S,Y,X,sq,strt,strt_num,pi){
   n = nrow(X)
   reg = regct(A,S,Y,X,strt,strt_num)
   Y = Y - X%*%(pi*reg$beta1 + (1-pi)*reg$beta0)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])+
     samplevarpr(sv[,1],sq,sv[,4],sv[,5],pi)
   return(sqrt(s/n))
 }
 
-IR_var<-function(A,S,Y,X,sq,strt,strt_num,pi){
+IR_var<-function(A,S,Y,X,strt,strt_num,pi){
   n = nrow(X)
   reg = regct(A,S,Y,X,strt,strt_num)
   Y = Y - X%*%((1-pi)*reg$beta1 + pi*reg$beta0)
-  sv = samplevar(A,S,Y,sq,strt,strt_num)
+  sv = samplevar(A,S,Y,strt,strt_num)
   s = samplevarr(sv[,1],sv[,2],sv[,3],pi)+
     samplevarHr(sv[,1],sv[,4],sv[,5])
   return(sqrt(s/n))

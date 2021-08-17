@@ -61,9 +61,8 @@ X1_S[which(X1 >= 2.5)] <- 2
 B <- as.numeric(interaction(X1_S,X2))
 X <- cbind(X1,X3)
 A <- sample(c(0,1),n,replace=TRUE,prob=c(1-pi,pi))
-Y0 <- alphavec[2]*3.6-alphavec[1]*2-alphavec[4]*integrate(m2e,lower = 0,upper = 1)$value+
-     alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
-Y1 <- alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
+Y0 <- alphavec[1]*X1+log(alphavec[3]*X1*log(X3+1)+1)+alphavec[4]*exp(X4)+rnorm(n,sd = 2)
+Y1 <- 1.483708+alphavec[2]*X2^2+log(alphavec[3]*X1*log(X3+1)+1)+rnorm(n,sd = 1)
 Y <- Y0*(1-A)+Y1*A
 tau.diff(Y, A, B, X, pi, q)
 }

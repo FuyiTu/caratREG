@@ -4,8 +4,7 @@ center_colmeans <- function(x){
   x - rep(xcenter, rep.int(nrow(x), ncol(x)))
 }
 
-#' Input check
-#'@export
+# Input check
 Input_check <- function(Y, A, B, X, pi, q){
   if(!is.numeric(A)||!is.vector(A)){
     stop("Please enter a numeric vector for treatment assignments (A)!")

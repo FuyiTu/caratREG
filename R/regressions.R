@@ -15,13 +15,13 @@ Input_check <- function(Y, A, B, X, pi, q){
   if(!is.numeric(Y)||!is.vector(Y)){
     stop("Please enter a numeric vector for observed outcomes (Y)!")
   }
-  if(!is.numeric(X)||!is.matrix(X)){
-    stop("Please enter a numeric matrix for additional covariates!")
-  }
   if(is.null(X)){
     if(length(A)!=length(B)||length(A)!=length(Y)){
       stop("A, B, Y should have same lengths!")
     }
+  }
+  else if(!is.numeric(X)||!is.matrix(X)){
+    stop("Please enter a numeric matrix for additional covariates!")
   }
   else{
     if(length(A)!=length(B)||length(A)!=length(Y)||length(A)!=nrow(X)){
